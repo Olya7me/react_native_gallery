@@ -1,13 +1,21 @@
 // App.tsx
 import React from 'react';
+import { StatusBar, useColorScheme, StyleSheet } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './src/screens/HomeScreen';
-import { StatusBar, useColorScheme, View, StyleSheet } from 'react-native';
-import {
-	SafeAreaProvider,
-	// useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import PinScreen from './src/screens/PinScreen';
+import { PinType } from './src/stores/PinStore';
 
-function App() {
+export type RootStackParamList = {
+	Home: undefined;
+	PinScreen: { pin: PinType };
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+const App = () => {
 	const isDarkMode = useColorScheme() === 'dark';
 
 	return (
@@ -15,26 +23,14 @@ function App() {
 			<StatusBar
 				barStyle={isDarkMode ? 'light-content' : 'dark-content'}
 			/>
-			<AppContent />
+			<NavigationContainer>
+				<Stack.Navigator screenOptions={{ headerShown: false }}>
+					<Stack.Screen name="Home" component={HomeScreen} />
+					<Stack.Screen name="PinScreen" component={PinScreen} />
+				</Stack.Navigator>
+			</NavigationContainer>
 		</SafeAreaProvider>
 	);
-}
-
-function AppContent() {
-	// const safeAreaInsets = useSafeAreaInsets();
-
-	return (
-		<View style={styles.container}>
-			<HomeScreen />
-		</View>
-	);
-}
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: 'white',
-	},
-});
+};
 
 export default App;

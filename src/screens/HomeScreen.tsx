@@ -1,28 +1,40 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
-import Pin from '../components/Pin';
+import React, { useEffect, useCallback } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { observer } from 'mobx-react-lite';
+import { pinStore } from '../stores/PinStore';
+import MasonryList from '../components/MasonryList';
 
-const HomeScreen = () => {
+const HomeScreen = observer(() => {
+	useEffect(() => {
+		pinStore.fetchPins();
+	}, []);
+
+	const loadMore = useCallback(() => {
+		pinStore.fetchPins();
+	}, []);
+
 	return (
-		<ScrollView contentContainerStyle={styles.container}>
-			<View>
-				<Pin
-					title={'Tiile'}
-					image={
-						'https://fototips.ru/wp-content/uploads/2012/03/00_Autumn_Photo.jpg'
-					}
-				/>
-			</View>
-		</ScrollView>
+		<SafeAreaView style={styles.safeArea}>
+			{pinStore.pins.length === 0 && pinStore.loading ? (
+				<View style={styles.indicator}>
+					<ActivityIndicator size="large" color="blue" />
+				</View>
+			) : (
+				<MasonryList pins={pinStore.pins} onEndReached={loadMore} />
+			)}
+		</SafeAreaView>
 	);
-};
+});
 
 const styles = StyleSheet.create({
-	container: {
+	safeArea: {
+		flex: 1,
+	},
+	indicator: {
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
-		padding: 10,
 	},
 });
 
