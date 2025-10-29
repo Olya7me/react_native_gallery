@@ -1,6 +1,7 @@
-import { View, Image, Text, StyleSheet, Pressable } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { View, Image, Text, StyleSheet, ImageStyle } from 'react-native';
+import { IMAGE_COMMON, FONT } from '../consts';
+import { SceletonImage } from '../components';
 
 interface PinProps {
 	title: string;
@@ -9,38 +10,25 @@ interface PinProps {
 	onRatioCalculated?: (ratio: number) => void;
 }
 
-const Pin: React.FC<PinProps> = ({
-	title,
-	image,
-	ratio: propRatio,
-	onRatioCalculated,
-}) => {
-	const [ratio, setRatio] = useState(propRatio || 1);
+const Pin: React.FC<PinProps> = ({ title, image, ratio }) => {
+	const [loading, setLoading] = useState(true);
 
-	useEffect(() => {
-		if (!propRatio && image) {
-			Image.getSize(image, (width, height) => {
-				const r = width / height;
-				setRatio(r);
-				onRatioCalculated?.(r);
-			});
-		}
-	}, [image]);
-
-	const onLike = () => {};
+	const imageStyles: ImageStyle[] = [
+		IMAGE_COMMON,
+		{ aspectRatio: ratio, position: loading ? 'absolute' : 'relative' },
+	];
 
 	return (
 		<View style={styles.pin}>
 			<View>
+				{loading && <SceletonImage ratio={ratio} />}
 				<Image
 					source={{ uri: image }}
-					style={[styles.image, { aspectRatio: ratio }]}
+					style={imageStyles}
+					onLoadEnd={() => setLoading(false)}
 				/>
-				<Pressable onPress={onLike} style={styles.heartBtn}>
-					<Icon name="favorite" size={16} color="black" />
-				</Pressable>
 			</View>
-			<Text style={styles.title} numberOfLines={1} ellipsizeMode="tail">
+			<Text style={FONT.title} numberOfLines={1} ellipsizeMode="tail">
 				{title}
 			</Text>
 		</View>
@@ -48,23 +36,7 @@ const Pin: React.FC<PinProps> = ({
 };
 
 const styles = StyleSheet.create({
-	pin: { flex: 1, padding: 4 },
-	title: {
-		fontSize: 16,
-		lineHeight: 22,
-		fontWeight: '600',
-		margin: 5,
-		color: '#181818',
-	},
-	heartBtn: {
-		backgroundColor: '#D3CFD4',
-		position: 'absolute',
-		bottom: 10,
-		right: 10,
-		padding: 5,
-		borderRadius: 50,
-	},
-	image: { width: '100%', borderRadius: 15 },
+	pin: { flex: 1, padding: 4, gap: 5 },
 });
 
 export default Pin;
