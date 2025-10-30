@@ -51,12 +51,12 @@ npx react-native start
 ```
 5.Запуск приложения:
 
-IOS
+iOS (проверено, приложение успешно запускается на iPhone)
 
 ```bash
 npx react-native run-ios
 ```
-Android:
+Android(не тестировалось)
 
 ```bash
 npx react-native run-android
