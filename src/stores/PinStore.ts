@@ -15,7 +15,7 @@ class PinStore {
 		makeAutoObservable(this);
 	}
 
-	fetchPins = async () => {
+	fetchPins = async (): Promise<void> => {
 		if (this.loading || this.allLoaded) return;
 
 		this.controller?.abort();
@@ -62,16 +62,23 @@ class PinStore {
 				}
 				this.loading = false;
 			});
-		} catch (error: any) {
+		} catch (err) {
 			runInAction(() => {
 				this.loading = false;
+
+				const error = err as { name?: string; message?: string };
+
 				if (error.name === 'AbortError') {
 					this.error = 'Загрузка отменена';
-				} else if (error.message?.includes('Ошибка загрузки')) {
+					return;
+				}
+
+				if (error.message?.includes('Ошибка загрузки')) {
 					this.error = error.message;
+				} else if (error.message) {
+					this.error = 'Произошла ошибка: ' + error.message;
 				} else {
-					this.error =
-						'Произошла неизвестная ошибка при загрузке данных';
+					this.error = 'Неизвестная ошибка при загрузке данных';
 				}
 			});
 		}
