@@ -27,8 +27,7 @@
 1. Клонируем репозиторий:
 
 ```bash
-git clone <URL вашего репозитория>
-cd <папка проекта>
+git clone https://github.com/Olya7me/react_native_gallery.git
 ```
 
 2. Устанавить зависимости:
